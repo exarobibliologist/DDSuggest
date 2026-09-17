@@ -15,28 +15,31 @@
     const deviationLinkEntryId = "entry.147453066"; 
     const usernameEntryId = "entry.1506871634";
     
-    // 2. Dynamic Username Extractor
+    // 2. Dynamic Username Extractor (Updated)
     function getMyUsername() {
         // Target the top navigation header
         const header = document.querySelector('header');
         if (!header) return "";
         
-        // Look for links in the header that point to DA and contain an image (the avatar)
+        // Look for links in the header that point to DA and contain an image
         const links = header.querySelectorAll('a[href^="https://www.deviantart.com/"]');
         
         for (let link of links) {
             if (link.querySelector('img')) {
-                // Split the URL: "https://www.deviantart.com/exarobibliologist"
-                const urlParts = link.href.split('/').filter(Boolean); // Removes trailing empty strings
+                // Strip query parameters (e.g., ?dealer_off=1) before evaluating the path
+                const cleanHref = link.href.split('?')[0]; 
+                const urlParts = cleanHref.split('/').filter(Boolean); 
                 const potentialUsername = urlParts.pop(); 
                 
-                // Exclude other generic icon links just in case
-                if (!['notifications', 'chat', 'submit', 'watch'].includes(potentialUsername)) {
+                // Exclude generic icon links and the new merch promo link
+                const exclusions = ['notifications', 'chat', 'submit', 'watch'];
+                
+                if (!exclusions.includes(potentialUsername) && !potentialUsername.startsWith('Merch-Sell')) {
                     return potentialUsername;
                 }
             }
         }
-        return ""; // Fallback if the DOM changes and the link isn't found
+        return ""; // Fallback
     }
 
     // 3. Create and style the floating button
